@@ -9,7 +9,7 @@
 （进去找到最新版本点下载APK即可）  
 2、自行安装termux并打开  
 3、复制下面这段命令到termux，并回车，按照指示安装即可（整个过程根据网络和配置在十分钟左右不等，期间会跳出一个存储空间请求，需要同意）  
-`git clone https://github.com/jxr2006/ark-fatigue.git; bash ark-fatigue/a.sh`  
+`pkg install git -y && rm -rf ark-fatigue; git clone https://github.com/jxr2006/ark-fatigue.git; bash ark-fatigue/a.sh`  
 4、显示安装完成后，会出现运行核心程序的选项，输入y则运行，也可以暂时不运行，在下次打开软件时会出现运行的选项，另外，输入 `Python3 ~/ark-fatigue/arknights.py` 也同样可以运行  
 5、运行核心程序后，若输出显示*开始抓包*，恭喜你，服务端已经搭建完毕，可以进入客户端的配置
 ### windows
