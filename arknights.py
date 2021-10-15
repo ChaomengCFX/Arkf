@@ -1,7 +1,7 @@
 from mitmproxy import proxy, options
 from mitmproxy.tools.dump import DumpMaster
 import mitmproxy.http as mp
-import re, json, time, datatime
+import re, json, time, datetime
 
 class Urls:
     def __init__(self):
@@ -22,7 +22,8 @@ class Urls:
         else:
             return False
 
-urls = Urls()
+urls = Urls()
+
 read = '程序开始\r\n' + datetime.datetime.strftime(time.localtime(), '%Y-%m-%d %H:%M:%S')
 with open('/storage/emulated/0/ark_data.json', 'r', encoding = 'utf-8') as f:
     try:
@@ -36,7 +37,8 @@ print('\033[1;33mdata文件内容:\r\n' + str(data) + '\033[0m')
 
 class Events:
     def __init__(self):
-        pass
+        pass
+
 
     def http_connect(self, flow: mp.HTTPFlow):
         pass
