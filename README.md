@@ -4,3 +4,4 @@
 ## 步骤一 配置服务端
 ### 安卓系统
 1、安卓系统的服务端搭建是通过termux进行的，我们需要先下载termux
+[termux下载地址](https://f-droid.org/packages/com.termux/)
