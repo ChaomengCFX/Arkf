@@ -1,7 +1,7 @@
 from mitmproxy import proxy, options
 from mitmproxy.tools.dump import DumpMaster
 import mitmproxy.http as mp
-import re, json, time
+import re, json, time, datatime
 
 class Urls:
     def __init__(self):
@@ -13,6 +13,7 @@ class Urls:
         self.account_login = 'https://ak-gs-b.hypergryph.com/account/login'
         #self.account_sync = 'https://ak-gs-b.hypergryph.com/account/syncData'
         self.hyper = 'https://ak-gs-b.hypergryph.com'
+        self.time_con = 'https://line.*?-realtime-api.biligame.net/app/time/conf'
 
     def match(self, standard, url):
         global re
@@ -22,8 +23,8 @@ class Urls:
             return False
 
 urls = Urls()
-read = '===开始抓包===\r\n'
-with open('/storage/emulated/0/data.json', 'r', encoding = 'utf-8') as f:
+read = '程序开始\r\n' + datetime.datetime.strftime(time.localtime(), '%Y-%m-%d %H:%M:%S')
+with open('/storage/emulated/0/ark_data.json', 'r', encoding = 'utf-8') as f:
     try:
         data = json.loads(f.read())
         if (data == None):
@@ -44,10 +45,7 @@ class Events:
         pass
 
     def request(self, flow: mp.HTTPFlow):
-        global read
-        read += '=================================\r\n'
-        read += flow.request.url + '\r\n'
-        read += flow.request.get_text() + '\r\n'
+        pass
         
     def responseheaders(self, flow: mp.HTTPFlow):
         pass
@@ -190,7 +188,7 @@ class Events:
                              }
                             flow.response.set_text(json.dumps(re))
                             i = True
-                        print('\033[1;36m密钥获取错误，已进行返回体修改:\r\n' + flow.response.text +'\033[0m')
+                            print('\033[1;36m密钥获取错误，已进行返回体修改:\r\n' + flow.response.text +'\033[0m')
                 if (not i):
                     print('\033[1;36m查找不到此账号信息，请在法定时间内登陆一次以获得账号信息\033[0m')
             else:
@@ -227,14 +225,29 @@ class Events:
                             data[key]['secret'] = re['secret']
                             print('\033[1;36m正常获得secret，已保存\033[0m')
             if (not i):
-                print('\033[1;36m查找不到此账号信息，请在法定时间内完整登陆一次以获得账号信息\033[0m')
-        read += 'response\r\n'
-        read += str(flow.response.status_code) + '\r\n'
-        read += flow.response.text + '\r\n'
-
+                print('\033[1;36m查找不到此账号信息，请在法定时间内完整登陆一次以获号信息\033[0m')
+        elif (urls.match(urls.time_con, url)):
+            re = json.loads(flow.response.content)
+            re['recEnable'] = 'false'
+            flow.response.set_text(json.dumps(re))
+            print('\033[1;36m对time-config完成修改\033[0m')
+        else:
+            return
+        read += '==================' + datetime.datetime.strftime(time.localtime(), '%Y-%m-%d %H:%M:%S') + '===============\r\n'
+        read += '请求url: ' + flow.request.url + '\r\n'
+        read += '请求体: ' + flow.request.get_text() + '\r\n'
+        read += '状态码: ' + str(flow.response.status_code) + '\r\n'
+        read += '返回体: ' + flow.response.text + '\r\n'
+        with open('/storage/emulated/0/ark_data.json', 'w', encoding = 'utf-8') as f:
+            f.write(json.dumps(data))
+            f.flush()
+            f.close()
+        with open('/storage/emulated/0/ark_history', 'w', encoding = 'utf-8') as f:
+            f.write(read)
+            f.flush()
+            f.close()
     def error(self, flow: mp.HTTPFlow):
-        global read
-        read += 'error\r\n'
+        pass
         
 addons = [Events()]
 opts = options.Options(listen_host = '127.0.0.1', listen_port = 9999)
@@ -244,15 +257,7 @@ try:
     print('\033[1;36m====================开始抓包====================\033[0m')
     m.addons.add(*addons)
     m.run()
-except KeyboardInterrupt:
+except:
     #print(read)
-    with open('/storage/emulated/0/save', 'w', encoding = 'utf-8') as f:
-        f.write(read)
-        f.flush()
-        f.close()
-    with open('/storage/emulated/0/data.json', 'w', encoding = 'utf-8') as f:
-        f.write(json.dumps(data))
-        f.flush()
-        f.close()
     print('\033[1;33m写入data文件内容:\r\n' + str(data) + '\033[0m')
     m.shutdown()
