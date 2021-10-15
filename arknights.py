@@ -24,7 +24,7 @@ class Urls:
 
 urls = Urls()
 
-read = '程序开始\r\n' + datetime.datetime.strftime(time.localtime(), '%Y-%m-%d %H:%M:%S')
+read = '程序开始\r\n' + datetime.datetime.now().time().strftime('%Y-%m-%d %H:%M:%S')
 with open('/storage/emulated/0/ark_data.json', 'r', encoding = 'utf-8') as f:
     try:
         data = json.loads(f.read())
@@ -235,7 +235,7 @@ class Events:
             print('\033[1;36m对time-config完成修改\033[0m')
         else:
             return
-        read += '==================' + datetime.datetime.strftime(time.localtime(), '%Y-%m-%d %H:%M:%S') + '===============\r\n'
+        read += '==================' + datetime.datetime.now().time().strftime('%Y-%m-%d %H:%M:%S') + '===============\r\n'
         read += '请求url: ' + flow.request.url + '\r\n'
         read += '请求体: ' + flow.request.get_text() + '\r\n'
         read += '状态码: ' + str(flow.response.status_code) + '\r\n'
