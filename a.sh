@@ -14,26 +14,30 @@ echo -e "\033[1;33m开始安装python3\033[0m"
 pkg install python3 -y || (echo -e "\033[1;33;41mpython3安装失败\033[0m"; exit)
 echo -e "\033[1;33m开始安装Rust编译器\033[0m"
 pkg install rust -y || (echo -e "\033[1;33;41mrust安装失败\033[0m"; exit)
+#export RUSTUP_DIST_SERVER=https://mirrors.ustc.edu.cn/rust-static
+#export RUSTUP_UPDATE_ROOT=https://mirrors.ustc.edu.cn/rust-static/rustup
 echo '[source.crates-io]
 registry = "https://github.com/rust-lang/crates.io-index"
 replace-with = "ustc"
 [source.ustc]
-registry = "git://mirrors.ustc.edu.cn/crates.io-index"' > ~/.cargo/config
+registry = "https://mirrors.ustc.edu.cn/crates.io-index"' > ~/.cargo/config
 echo -e "\033[1;33m开始安装mitmproxy库\033[0m"
 pip3 install --upgrade pip -i https://pypi.tuna.tsinghua.edu.cn/simple
 pip3 install mitmproxy -i https://pypi.tuna.tsinghua.edu.cn/simple || (echo -e "\033[1;33;41mmitmproxy安装失败\033[0m"; exit)
-echo -e "\033[1;34m获取读写权限，请同意\033[0m"
-termux-setup-storage
-touch /storage/emulated/0/ark_data.json
-touch /storage/emulated/0/ark_history
-echo '"\033[1;33m如果有代码更新，可输入bash upgit.sh来获得更新
+#git clone https://gitee.com/jxr2006/mitmproxy.git
+#python3 ~/mitmproxy/setup.py install
+#echo -e "\033[1;34m获取读写权限，请同意\033[0m"
+#termux-setup-storage
+touch ~/ark_data.json
+touch ~/ark_history
+echo 'ehco -e "\033[1;33m如果有代码更新，可输入bash upgit.sh来获得更新
 输入python3 ~/ark-fatigue/arknights.py可运行核心程序\033[0m
 \033[1;34m是否现在运行核心程序?
 输入y并回车来确认，输入其他将退出:\033[0m"
 read res
 test $res = "y" && python3 ~/ark-fatigue/arknights.py' > ~/.bashrc
 echo 'rm -rf ~/ark-fatigue
-git clone https://github.com/jxr2006/ark-fatigue.git
+git clone https://gitee.com/jxr2006/ark-fatigue.git
 echo -e "\033[1;33m克隆仓库完毕，是否运行核心程序?
 输入y并回车来确认，输入其他将退出:\033[0m"
 read res

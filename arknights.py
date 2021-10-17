@@ -24,8 +24,8 @@ class Urls:
 
 urls = Urls()
 
-read = '程序开始\r\n' + datetime.datetime.now().time().strftime('%Y-%m-%d %H:%M:%S')
-with open('/storage/emulated/0/ark_data.json', 'r', encoding = 'utf-8') as f:
+read = '…………………………………程序开始…………………………………\r\n' + datetime.datetime.now().time().strftime('%Y-%m-%d %H:%M:%S') + '\r\n'
+with open('ark_data.json', 'r', encoding = 'utf-8') as f:
     try:
         data = json.loads(f.read())
         if (data == None):
@@ -240,11 +240,11 @@ class Events:
         read += '请求体: ' + flow.request.get_text() + '\r\n'
         read += '状态码: ' + str(flow.response.status_code) + '\r\n'
         read += '返回体: ' + flow.response.text + '\r\n'
-        with open('/storage/emulated/0/ark_data.json', 'w', encoding = 'utf-8') as f:
+        with open('ark_data.json', 'w', encoding = 'utf-8') as f:
             f.write(json.dumps(data))
             f.flush()
             f.close()
-        with open('/storage/emulated/0/ark_history', 'w', encoding = 'utf-8') as f:
+        with open('ark_history', 'w', encoding = 'utf-8') as f:
             f.write(read)
             f.flush()
             f.close()
@@ -256,7 +256,7 @@ opts = options.Options(listen_host = '127.0.0.1', listen_port = 9999)
 m = DumpMaster(options=opts)
 
 try:
-    print('\033[1;36m====================开始抓包====================\033[0m')
+    print('\033[1;36m====================开始抓包，请确保wifi代理设置，如未下载证书可现在下载====================\033[0m')
     m.addons.add(*addons)
     m.run()
 except:
