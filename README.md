@@ -1,8 +1,15 @@
 # 利用mitmproxy抓包绕过方舟防沉迷
 ***本教程仅供参考学习使用，严禁用于其他用途***
+*本项目优先在gitee同名项目更新*
 > 注: 暂时只实现了B服，官服晚些实现
-## 步骤一 搭建服务端
-> 服务端，相当于一个每时每刻都在监视或修改网络数据的工具，我们需要根据系统对它先进行搭建
+## 步骤大纲：
+1. **搭建代理服务器**
+2. **配置客户端**
+3. **在法定时间登陆一次**
+4. **完成**
+## 步骤一 搭建代理服务器
+> 代理服务器，相当于一个每时每刻都在监视或修改网络数据的工具，我们需要根据系统对它先进行搭建  
+**找到自己的系统按教程进行即可**
 ### 安卓系统
 1、服务端在安卓系统搭建是通过termux进行的，我们需要先下载termux  
 [termux下载地址](https://f-droid.org/packages/com.termux/)
@@ -10,35 +17,47 @@
 [下载速度慢可以用网盘](https://pan.baidu.com/s/1L3P_Uq-1zngROkQYrXICuQ)
 提取码:mrfz  
 2、自行安装termux并打开  
-3、复制下面这段命令到termux，并回车，按照指示安装即可（整个过程根据网络和配置在十分钟左右不等，期间会跳出一个存储空间请求，需要同意）  
+3、进行liunx环境的安装，复制下面这段命令到termux，并回车，按照指示安装即可（整个过程请保持网络通畅，这是失败的主要原因）  
 ```
-rm -rf ark-fatigue; pkg install git -y && git clone https://gitee.com/jxr2006/ark-fatigue.git; bash ark-fatigue/a.sh
+bash <(curl -s -S -L https://gitee.com/jxr2006/ark-fatigue/raw/main/install_ubuntu.sh)
 ```  
-*若不确保安装成功与否，此段可以再输入一次*
-4、显示安装完成后，会出现运行核心程序的选项，输入y则运行，也可以暂时不运行，在下次打开软件时会出现运行的选项，另外，输入
+**注意：update的时候需要手动输入两次y**  
+*这一步有时候会失败，大部分是网络问题，多试几遍即可*  
+![安装](https://images.gitee.com/uploads/images/2021/1029/150552_e616577b_7638561.png "Screenshot_20211029-130639.png")  
+▲安装  
+![输入图片说明](https://images.gitee.com/uploads/images/2021/1029/151352_a8987044_7638561.png "Screenshot_20211029-130954.png")  
+▲安装完成效果  
+4、显示`进入ubuntu`后，输入下面这行命令来安装mitmproxy
 ```
-python3 ~/ark-fatigue/arknights.py
+bash <(curl -s -S -L https://gitee.com/jxr2006/ark-fatigue/raw/main/setup_mitmproxy.sh)
+```  
+*注意：期间需要设置时区，请先后输入6（亚洲），70，70（上海）*  
+![安装](https://images.gitee.com/uploads/images/2021/1029/150845_6a3ea038_7638561.png "Screenshot_20211029-131025.png")  
+▲安装mitmproxy  
+![设置大洲](https://images.gitee.com/uploads/images/2021/1029/150922_8390d541_7638561.png "Screenshot_20211028-180953.png")  
+▲输入6  
+![设置城市](https://images.gitee.com/uploads/images/2021/1029/150954_21fd196b_7638561.png "Screenshot_20211029-131316.png")
+▲输入70，应该要输入两次  
+5、显示`mitmproxy`安装完成后，输入下面这行命令来导入并运行程序  
 ```
-也同样可以运行  
-5、运行核心程序后，若输出显示*开始抓包*，恭喜你，服务端已经搭建完毕，可以进入客户端的配置
+bash <(curl -s -S -L https://gitee.com/jxr2006/ark-fatigue/raw/main/init_script.sh)
+```
+![运行](https://images.gitee.com/uploads/images/2021/1029/152114_41ac3f3a_7638561.png "Screenshot_20211029-130149.png")
+▲再次打开termux将自动更新并运行代码  
+6、设置完四位端口后，代理服务器已经搭建完毕，可以进入客户端的配置  
+***之后每次登陆前请确保termux上的程序已经开始运行（启动termux默认运行，也可以输入`python3 arknights.py`来运行）***
 ### Windows
 l、去[mitmproxy官网](https://mitmproxy.org/#mitmproxy)选择windows版本下载，自行安装(如果是windows10以下版本需要下载[mitmproxy5.3.0](https://mitmproxy.org/downloads/)的mitmproxy-5.3.0-windows-installer.exe)  
 ![点击下载windows版本](https://images.gitee.com/uploads/images/2021/1023/174442_e05b8115_7638561.png "8%XI4@WA652P]RL{[LX67]7.png")  
 ![安装](https://images.gitee.com/uploads/images/2021/1023/174603_4fddf567_7638561.png "K{[0DZ1$H2RBA]24$5C48KU.png")  
-2、下载这个项目的源代码，解压，记住路径，然后创建两个文件——ark_data.json，ark_history（注意第二个文件没有后缀，需要在菜单栏的查看打开显示拓展名）  
-![设置完的文件夹](https://images.gitee.com/uploads/images/2021/1023/194835_d87d39b4_7638561.png "D7IB[7O2ASNFQY(0W1Y1UOF.png")  
-![显示拓展名](https://images.gitee.com/uploads/images/2021/1023/203402_b94f7413_7638561.png "1MJTLRJD}8X`LGS47D1ZS}G.png")  
-3、用代码编辑软件或者记事本打开arknights.py，将第一行单引号里面的内容修改为上一步解压的路径，记得最后要有一个/（图片里面是错误示范）  
-![设置路径](https://images.gitee.com/uploads/images/2021/1023/195749_6642e1b8_7638561.png "WF6%SD~R14{)@5`4XJL$K@Q.png")  
-4、接下来进行客户端（模拟器）的设置
+2、下载arknights.py到自己新建的文件夹  
+![下载arknights.py](https://images.gitee.com/uploads/images/2021/1029/134040_3d561131_7638561.png "I`T0ORU46Y`F`28Q_(3PY(R.png")  
+3、接下来进行客户端（模拟器）的设置  
 ## 步骤二 配置客户端
 > 客户端，既运行游戏的系统，我们需要将其对服务端进行对接，使服务端能够监视或修改客户端的数据  
-#### 以下所有步骤需要在服务端运行核心程序后进行
-### 普通安卓系统
-##### 由于系统问题，不再推荐直接使用安卓真机，建议使用虚拟机的方法  
-1、设置->网络–>WLAN->选择连接的wifi长按(不同设备操作方式不同，有些是击旁边按钮)–>修改网络–>高级选项，将代理选项设置为手动，在代理服务器主机名中填写`127.0.0.1`，在端口上填写`8008`，完成设置后点击保存即可（不用的时候需要改回去，不然影响平时使用）
+#### 以下所有步骤需要在代理服务器运行程序后进行
 2、在浏览器打开`http://mitm.it`，点击安卓的第一个选项下载，随后打开会跳出证书安装器，随便起一个英文名字，确认即可
-### 安卓虚拟机
+### 安卓系统
 由于直接在主机配置wifi网络需要来回切换，直接在真机上容易出自动登录证书问题，且流量党无法使用，这里介绍使用安卓虚拟机的办法  
 *注意:termux服务端若安装在同一手机上，需要安装在真机，而不是虚拟机*  
 1、下载虚拟机，这里推荐Vmos pro  
@@ -51,7 +70,7 @@ l、去[mitmproxy官网](https://mitmproxy.org/#mitmproxy)选择windows版本下
 提取码:mrfz  
 将安装包导入虚拟机并安装  
 6、安装完后会弹出启用xposed插件的提示，同意即可
-7、设置->搜索WLAN->选择连接的VMOSwifi长按–>修改网络–>高级选项，将代理选项设置为手动，在代理服务器主机名中填写`127.0.0.1`，在端口上填写`8008`，完成设置后点击保存即可  
+7、设置->搜索WLAN->选择连接的VMOSwifi长按–>修改网络–>高级选项，将代理选项设置为手动，在代理服务器主机名中填写`127.0.0.1`，在端口上填写你在搭建服务端时输入的端口，完成设置后点击保存即可  
 8、在虚拟机浏览器打开`http://mitm.it`，点击安卓的第一个选项下载，随后打开会跳出证书安装器，随便起一个英文名字，确认即可  
 ### 模拟器
 1、用管理员权限打开cmd  
@@ -77,10 +96,12 @@ mitmweb -p 8008 -s 你解压源代码的文件夹路径/arknights.py
 ![粘贴](https://images.gitee.com/uploads/images/2021/1023/201128_13686839_7638561.png "R1_K9]X`1~N6PKLS{U`~$$4.png")  
 9、在设置->安全->信任的凭据->系统下面能找到你设置的证书名字，则说明安装成功  
 ![查看](https://images.gitee.com/uploads/images/2021/1023/201502_ee7e839a_7638561.png "4_)$HF6DD89M@75W6GLWIW5.png")  
-10、以后要运行程序同样是在管理员权限下的cmd输入
+10、***之后每次登陆前请确保cmd上的程序已经开始运行***
 ```
 mitmweb -p 8008 -s 你解压源代码的文件夹路径/arknights.py
 ```
+输入上述代码即可  
+**觉得每次输入麻烦的话，可以把上述代码保存到和程序同目录的XXX.bat文件，之后点击即可运行**
 ![运行](https://images.gitee.com/uploads/images/2021/1023/202312_0602a9f3_7638561.png "9JV5}2EF4(CYL%84W(]RDRB.png")  
 ## 步骤三 在法定时间内登陆
 由于要获取正常时段的用户信息来实现时段外登陆，你需要在时段内登陆一次
@@ -88,7 +109,8 @@ mitmweb -p 8008 -s 你解压源代码的文件夹路径/arknights.py
 你已经可以在时段外登陆了，不过要注意，闪断更新和大更新会刷新服务器数据导致登陆失效，需要下一次法定时间登陆来获得新的登陆信息  
 **最后要说的是，不要过度的投入以影响到自己的学业哟~**
 ## 注意事项
-**登录过程中一定需要打开程序来获得登录信息**
+- **登录过程中一定需要打开程序来获得登录信息**
+- **输入命令的时候请确认输入法没有修改命令**
 ## 其他
 手机端输入`bash upgit.sh`可以对代码进行更新  
 此项目为我一人花了一周的研究成果，由于课业紧张，难免会有疏漏，反馈&交流加QQ: 2198818239  
