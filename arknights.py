@@ -25,6 +25,7 @@ class Urls:
         self.login_1 = 'https://p.biligame.com/api/external/user.token.oauth.login/v3'
         self.login_2 = 'https://line.*?-sdk.*?center-login-sh.biligame.net/api/external/login/v3'
         self.login_3 = 'https://line.*?-sdk.*?center-login-sh.biligame.net/api/external/user.token.oauth.login/v3'
+        self.login_4 = 'https://line.*?-sdk.*?center-login-sh.biligame.net/api/external/token.exchange/v3'
         self.get_token = 'https://as.hypergryph.com/u8/user/v1/getToken'
         self.account_login = 'https://ak-gs-b.hypergryph.com/account/login'
         self.hyper = 'https://ak-gs-b.hypergryph.com'
@@ -85,7 +86,7 @@ class Events:
                 print('\033[1;36m检测到未成年人，已进行返回体修改:\r\n' + flow.response.text +'\033[0m')
             else:
                 print('\033[1;36m检测到已经成年，未进行修改\033[0m')
-        elif (urls.match(urls.login_1, url) or urls.match(urls.login_2, url) or urls.match(urls.login_3, url)):
+        elif (urls.match(urls.login_1, url) or urls.match(urls.login_2, url) or urls.match(urls.login_3, url) or urls.match(urls.login_4, url)):
             re = json.loads(flow.response.content)
             print('\033[1;36m向BililiGame SDK服务器登陆包内容:\r\n' + flow.response.text + '\033[0m')
             if (re['code'] != 0):
