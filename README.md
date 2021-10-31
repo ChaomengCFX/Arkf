@@ -45,7 +45,7 @@ bash <(curl -s -S -L https://gitee.com/jxr2006/ark-fatigue/raw/main/init_script.
 ▲再次打开termux将自动更新并运行代码  
 6. 设置完四位端口后，代理服务器已经搭建完毕，可以进入客户端的配置  
 ***之后每次登陆前请确保termux上的程序已经开始运行（启动termux默认运行，也可以输入`python3 arknights.py`来运行）***
-### Windows
+### Windows（适用于 Android 子系统和安卓模拟器）
 1. 去[mitmproxy官网](https://mitmproxy.org/#mitmproxy)选择windows版本下载，自行安装(如果是windows10以下版本需要下载[mitmproxy5.3.0](https://mitmproxy.org/downloads/)的mitmproxy-5.3.0-windows-installer.exe)  
 ![点击下载windows版本](https://images.gitee.com/uploads/images/2021/1023/174442_e05b8115_7638561.png "8%XI4@WA652P]RL{[LX67]7.png")  
 ![安装](https://images.gitee.com/uploads/images/2021/1023/174603_4fddf567_7638561.png "K{[0DZ1$H2RBA]24$5C48KU.png")  
@@ -55,6 +55,8 @@ bash <(curl -s -S -L https://gitee.com/jxr2006/ark-fatigue/raw/main/init_script.
 ## 步骤二 配置客户端
 > 客户端，既运行游戏的系统，我们需要将其对服务端进行对接，使服务端能够监视或修改客户端的数据  
 #### 以下所有步骤需要在代理服务器运行程序后进行
+### Windows 11 安卓子系统
+无需配置，运行代理服务器后即可正常工作。
 ### 安卓系统
 由于直接在主机配置wifi网络需要来回切换，直接在真机上容易出自动登录证书问题，且流量党无法使用，这里介绍使用安卓虚拟机的办法  
 *注意:termux服务端若安装在同一手机上，需要安装在真机，而不是虚拟机*  
