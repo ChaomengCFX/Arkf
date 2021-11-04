@@ -83,21 +83,6 @@ class Based:
             re['recEnable'] = 'false'
             flow.response.set_text(json.dumps(re))
             printc('对time-config完成修改')
-        elif Urls.umatch(url, Urls.hyper):
-            if not 'seqnum' in flow.response.headers:
-                return
-            printc('检测到鹰角数据包')
-            i = [k for k in data if data[k]['uid'] == int(flow.request.headers['uid'])]
-            key = i[0] if len(i) >= 1 else None
-            del i
-            if key:
-                if (flow.response.headers['seqnum'] != 'null'):
-                    data[key]['seqnum'] = flow.response.headers['seqnum']
-                    printc('已保存seqnum: ' + str(flow.response.headers['seqnum']))
-                else:
-                    printc('未保存seqnum，因为它为空值，可能是上一次登陆信息未保存或者闪断更新导致')
-            else:
-                printc('查找不到此账号信息，', '请在法定时间内登陆一次', '以获得账号信息', conf = [(1, 36, 48), (1, 31, 48), (1, 36, 48)])
         elif Urls.umatch(url, Urls.get_token):
             re = json.loads(flow.response.content)
             printc('getToken包内容:\r\n', flow.response.text, conf = [(1, 36, 48), (1, 33, 48)])
@@ -135,7 +120,7 @@ class Based:
                       'login': {
                      	  'access_key': json.loads(json.loads(flow.request.get_content())['extension'])['access_token'],
                      	 },
-                     	 'uid': re['uid'],
+                     	 'uid': int(re['uid']),
                      	 'seqnum': 1,
                      	 'token': re['token'],
                      	 'secret': None
@@ -168,9 +153,24 @@ class Based:
                     printc('正常获得secret，已保存')
             else:
                 printc('查找不到此账号信息，', '请在法定时间内登陆一次', '以获得账号信息', conf = [(1, 36, 48), (1, 31, 48), (1, 36, 48)])
+        elif Urls.umatch(url, Urls.hyper):
+            if not 'seqnum' in flow.response.headers:
+                return
+            printc('检测到鹰角数据包')
+            i = [k for k in data if data[k]['uid'] == int(flow.request.headers['uid'])]
+            key = i[0] if len(i) >= 1 else None
+            del i
+            if key:
+                if (flow.response.headers['seqnum'] != 'null'):
+                    data[key]['seqnum'] = flow.response.headers['seqnum']
+                    printc('已保存seqnum: ' + str(flow.response.headers['seqnum']))
+                else:
+                    printc('未保存seqnum，因为它为空值，可能是上一次登陆信息未保存或者闪断更新导致')
+            else:
+                printc('查找不到此账号信息，', '请在法定时间内登陆一次', '以获得账号信息', conf = [(1, 36, 48), (1, 31, 48), (1, 36, 48)])        
         if c:
             with open(p + 'ark_data.json', 'w', encoding = 'utf-8') as f:
-                f.write(json.dumps(data))
+                f.write(json.dumps(data, indent = 4, separators = (', ', ': '), ensure_ascii = False))
                 f.close()
 
 class Bilibili_listener:
@@ -261,7 +261,7 @@ class Bilibili_listener:
                         data[str(re['uid'])]['login']['uuid'] = str(input())
         if c:
             with open(p + 'ark_data.json', 'w', encoding = 'utf-8') as f:
-                f.write(json.dumps(data))
+                f.write(json.dumps(data, indent = 4, separators = (', ', ': '), ensure_ascii = False))
                 f.close()
     '''
     def error(self, flow: mp.HTTPFlow):
