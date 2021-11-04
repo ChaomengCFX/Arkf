@@ -1,6 +1,6 @@
 # 利用mitmproxy抓包绕过方舟防沉迷
 ***本教程仅供参考学习使用，严禁用于其他用途***
-> 本项目官服,Bilibili服通用（B服还有闪断问题未解决）
+> 本项目官服,Bilibili服通用（闪断问题未解决）
 ## 步骤大纲：
 1. **搭建代理服务器**
 2. **配置客户端**
@@ -49,9 +49,9 @@ bash <(curl -s -S -L https://gitee.com/jxr2006/ark-fatigue/raw/main/init_script.
 1. 去[mitmproxy官网](https://mitmproxy.org/#mitmproxy)选择windows版本下载，自行安装(如果是windows10以下版本需要下载[mitmproxy5.3.0](https://mitmproxy.org/downloads/)的mitmproxy-5.3.0-windows-installer.exe)  
 ![点击下载windows版本](https://images.gitee.com/uploads/images/2021/1023/174442_e05b8115_7638561.png "8%XI4@WA652P]RL{[LX67]7.png")  
 ![安装](https://images.gitee.com/uploads/images/2021/1023/174603_4fddf567_7638561.png "K{[0DZ1$H2RBA]24$5C48KU.png")  
-2. 下载arknights.py和run.bat到同一个新建的文件夹（下载最新版本的，图片是老的）  
-![下载arknights.py](https://images.gitee.com/uploads/images/2021/1029/134040_3d561131_7638561.png "I`T0ORU46Y`F`28Q_(3PY(R.png")  
-3. 运行run.bat，接下来进行客户端（模拟器）的设置  
+2. 下载click_to_run.bat到一个新建的文件夹（下载最新版本的即可）  
+![bat下载](https://images.gitee.com/uploads/images/2021/1031/183618_46bdefdc_7638561.png "3GS8R}@%6[~M@8}4`NY)F56.png")  
+3. 运行click_to_run.bat，接下来进行客户端（模拟器）的设置  
 ## 步骤二 配置客户端
 > 客户端，既运行游戏的系统，我们需要将其对服务端进行对接，使服务端能够监视或修改客户端的数据  
 #### 以下所有步骤需要在代理服务器运行程序后进行
@@ -102,7 +102,7 @@ bash <(curl -s -S -L https://gitee.com/jxr2006/ark-fatigue/raw/main/init_script.
 ![粘贴](https://images.gitee.com/uploads/images/2021/1023/201128_13686839_7638561.png "R1_K9]X`1~N6PKLS{U`~$$4.png")  
 9. 在设置->安全->信任的凭据->系统下面能找到你设置的证书名字，则说明安装成功  
 ![查看](https://images.gitee.com/uploads/images/2021/1023/201502_ee7e839a_7638561.png "4_)$HF6DD89M@75W6GLWIW5.png")  
-10. ***之后每次登陆前请确保run.bat已经开始运行（另外，如果更换了网络导致ip变化，请重新执行第2，3步）***
+10. ***之后每次登陆前请确保click_to_run.bat已经开始运行（另外，如果更换了网络导致ip变化，请重新执行第2，3步）***
 ## 步骤三 B服需要在法定时间内登陆
 由于要获取正常时段的用户信息来实现时段外登陆，如果是B服，你需要在时段内登陆一次，官服直接登陆即可
 ## 步骤四 完工！
@@ -114,6 +114,6 @@ bash <(curl -s -S -L https://gitee.com/jxr2006/ark-fatigue/raw/main/init_script.
 - **如果想将代理服务器和客户端用于不同设备，则客户端的地址需要设置为服务端ip地址，端口设置为服务端端口**
 - **更新游戏的时候可以关闭代理，更新完再打开**
 ## 其他
-- 手机端的代码在termux启动时代码会自动更新，电脑端如果有更新，需要到发行版下载新版本代码  
-*此项目为我一人花了一周的研究成果，由于课业紧张，难免会有疏漏，反馈&交流&申诉加QQ: 2198818239  
+- 手机端的代码在termux启动时代码会自动更新，电脑端运行click_to_run.bat时会下载新版本代码  
+- *此项目为我一人花了一周的研究成果，由于课业紧张，难免会有疏漏，反馈&交流&申诉加QQ: 2198818239  
 **请勿随意传播此教程(◍˃̶ᗜ˂̶◍)✩**
