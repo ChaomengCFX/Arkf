@@ -16,10 +16,11 @@ with open(his, 'w', encoding = 'utf-8') as f:
     f.write('……………………………………………………………………\n' + '…………………………………程序开端…………………………………\n' + '……………………………………………………………………\n' + time.strftime('%Y-%m-%d %H:%M:%S') + '\n')
     f.close()
 try:
-    with open(p + 'ark_data.json', 'r', encoding = 'utf-8') as f:
-        data = json.loads(f.read())
+    with open(p + 'ark_data.json', 'r+', encoding = 'utf-8') as f:
+        data = json.dumps(json.loads(f.read()), indent = 2, separators = (', ', ': '), ensure_ascii = False)
         if (data == None):
             data = {}
+        f.write(data)
         f.close()
 except:
     data = {}
@@ -170,7 +171,7 @@ class Based:
                 printc('查找不到此账号信息，', '请在法定时间内登陆一次', '以获得账号信息', conf = [(1, 36, 48), (1, 31, 48), (1, 36, 48)])        
         if c:
             with open(p + 'ark_data.json', 'w', encoding = 'utf-8') as f:
-                f.write(json.dumps(data, indent = 4, separators = (', ', ': '), ensure_ascii = False))
+                f.write(json.dumps(data, indent = 2, separators = (', ', ': '), ensure_ascii = False))
                 f.close()
 
 class Bilibili_listener:
@@ -261,7 +262,7 @@ class Bilibili_listener:
                         data[str(re['uid'])]['login']['uuid'] = str(input())
         if c:
             with open(p + 'ark_data.json', 'w', encoding = 'utf-8') as f:
-                f.write(json.dumps(data, indent = 4, separators = (', ', ': '), ensure_ascii = False))
+                f.write(json.dumps(data, indent = 2, separators = (', ', ': '), ensure_ascii = False))
                 f.close()
     '''
     def error(self, flow: mp.HTTPFlow):
