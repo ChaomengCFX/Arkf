@@ -1,6 +1,7 @@
-import mitmproxy.http as mp
-import os, re, json, time
-
+VERSION = 'v2.2.1.3'
+PULISH_TIME = '2021-11-06 22-18-00'
+import time, os
+stime = time.strftime('%Y-%m-%d %H-%M-%S')
 if os.name == 'nt':
     from colorama import init
     init(autoreset = True)
@@ -8,12 +9,18 @@ if os.name == 'nt':
 def printc(*string, conf = [(1, 36, 48)]):
     print(''.join(['\033[%s;%s;%sm%s\033[0m' % (conf[n if n <= len(conf) - 1 else len(conf) - 1][0], conf[n if n <= len(conf) - 1 else len(conf) - 1][1], conf[n if n <= len(conf) - 1 else len(conf) - 1][2], string[n]) for n in range(len(string))]))
 
+title = '╔══════════════════════════════════════╗\n' + '║  程序开始时间: %s%s║\n' % (stime, ((60 if os.name == 'nt' else 22) - len(stime)) * ' ') + '╠══════════════════════════════════════╣\n' + '║  程序版本: %s%s║\n' % (VERSION, ((64 if os.name == 'nt' else 26) - len(VERSION)) * ' ') + '╠══════════════════════════════════════╣\n' + '║  程序修改时间: %s%s║\n' % (PULISH_TIME, ((60 if os.name == 'nt' else 22) - len(PULISH_TIME)) * ' ') + '╚══════════════════════════════════════╝'
+printc(title, conf = [(1, 32, 48)])
+
+import mitmproxy.http as mp
+import re, json
+
 p = os.getcwd().replace('\\', '/') + '/'
 if not os.path.exists(p + 'ark_history'):
     os.makedirs(p + 'ark_history')
-his = p + 'ark_history/' + time.strftime('%Y_%m_%d %H-%M-%S')
+his = p + 'ark_history/' + stime
 with open(his, 'w', encoding = 'utf-8') as f:
-    f.write('……………………………………………………………………\n' + '…………………………………程序开端…………………………………\n' + '……………………………………………………………………\n' + time.strftime('%Y-%m-%d %H:%M:%S') + '\n')
+    f.write(title + '\n\n')
     f.close()
 try:
     with open(p + 'ark_data.json', 'r+', encoding = 'utf-8') as f:
@@ -23,11 +30,16 @@ try:
         f.truncate()
         f.write(data_s)
         f.close()
-except:
+except Exception as e:
+    printc('加载ark_data.json时出错:\r\n', e, conf = [(1, 33, 48), (1, 31, 48)])
     data = {}
-    data_s = '{}（空）'
+    data_s = '{}（加载出错，已将其作为空处理）'
 printc('data文件内容:\r\n', data_s, conf = [(1, 36, 48), (1, 33, 48)])
 del data_s
+
+def is_time():
+    return True if time.localtime().tm_hour == 20 else False
+
 class Urls:
     heartbeat = 'http://line.*?realtime.*?api.biligame.net/app/v2/time/heartbeat'
     login_1 = 'https://p.biligame.com/api/external/user.token.oauth.login/v3'
@@ -42,6 +54,7 @@ class Urls:
     gf_auth = 'https://as.hypergryph.com/user/auth'
     gf_login = 'https://as.hypergryph.com/user/login'
     ping = 'https://.*?hypergryph.com/online/v1/ping'
+    login_out = 'https://.*?hypergryph.com/online/v1/loginout'
     hyper_host = 'hypergryph'
     bili_host = 'biligame'
     #account_sync = 'https://ak-gs-b.hypergryph.com/account/syncData'
@@ -72,6 +85,49 @@ class History_recorder:
             f.close()
 
 class Based:
+    def request(self, flow: mp.HTTPFlow):
+        url = flow.request.url
+        if Urls.umatch(url, Urls.account_login) and not is_time():
+            printc('当前为时间段外')
+            i = [k for k in data if data[k]['uid'] == int(json.loads(flow.request.get_content())['uid'])]
+            key = i[0] if len(i) >= 1 else None
+            del i
+            if key:
+                flow.request.host = 'none.com'
+                body = bytes(json.dumps({
+                  'result': 0,
+                  'uid': str(data[key]['uid']),
+                  'secret': data[key]['secret'] if 'secret' in data[key] else None,
+                  'serviceLicenseVersion': 0
+                 }), encoding = 'utf-8')
+                flow.response = mp.Response.make(
+                    status_code = 200,
+                    content = body,
+                    headers = {
+                      'Cache-Control': 'no-cache',
+                      'Content-Length': bytes(len(body)),
+                      'Content-Type': 'application/json; charset=utf-8',
+                      'Date': 'Sat, 06 Nov 2021 13:41:52 GMT',
+                      'seqnum': bytes(str(data[key]['seqnum']), encoding = 'utf-8')
+                     },
+                    )
+                del body
+                printc('已进行返回头和返回体修改:\r\n', str(flow.response.headers) + '\r\n' + flow.response.text, conf = [(1, 36, 48), (1, 33, 48)])
+            else:
+                printc('查找不到此账号信息，', '请在法定时间内登陆一次', '以获得账号信息', conf = [(1, 36, 48), (1, 31, 48), (1, 36, 48)])
+        elif Urls.umatch(url, Urls.login_out) and not is_time():
+            flow.request.host = 'none.com'
+            flow.response = mp.Response.make(
+                status_code = 200,
+                content = b'{"result":0}',
+                headers = {
+                  'Cache-Control': 'no-cache',
+                  'Content-Length': '12',
+                  'Content-Type': 'application/json; charset=utf-8',
+                  'Date': 'Sat, 06 Nov 2021 13:41:52 GMT',
+                  'Vary': 'origin'
+                 },
+                )
     def response(self, flow: mp.HTTPFlow):
         global data
         url = flow.request.url
@@ -139,30 +195,22 @@ class Based:
                         printc('检测到官服新账号成功登陆，已建立账号信息')
                 else:
                     printc('正常获得token，但未获得账号信息，', '请在法定时间内重新登陆一次', '以获得账号信息', conf = [(1, 36, 48), (1, 31, 48), (1, 36, 48)])
-        elif Urls.umatch(url, Urls.account_login):
+        elif Urls.umatch(url, Urls.account_login) and is_time():
             re = json.loads(flow.response.content)
             printc('account/login包内容:\r\n', flow.response.text, conf = [(1, 36, 48), (1, 33, 48)])
             i = [k for k in data if data[k]['uid'] == int(json.loads(flow.request.get_content())['uid'])]
             key = i[0] if len(i) >= 1 else None
             del i
             if key:
-                if re['result'] != 0:
-                    flow.response.status_code = 200
-                    re = {
-                      'result': 0,
-                      'uid': str(data[key]['uid']),
-                      'secret': data[key]['secret'] if 'secret' in data[key] else None,
-                      'serviceLicenseVersion': 0
-                     }
-                    flow.response.set_text(json.dumps(re))
-                    flow.response.headers['seqnum'] = str(data[key]['seqnum'])
-                    printc('检测到鹰角登陆错误，已进行返回头和返回体修改:\r\n', str(flow.response.headers) + '\r\n' + flow.response.text, conf = [(1, 36, 48), (1, 33, 48)])
-                else:
+                if re['result'] == 0:
                     data[key]['secret'] = re['secret']
                     c = True
                     printc('正常获得secret，已保存')
+                else:
+                    printc('法定时间段内登陆失败，原因未知')
             else:
                 printc('查找不到此账号信息，', '请在法定时间内登陆一次', '以获得账号信息', conf = [(1, 36, 48), (1, 31, 48), (1, 36, 48)])
+
         elif Urls.umatch(url, Urls.hyper):
             if not 'seqnum' in flow.response.headers:
                 return
@@ -177,7 +225,7 @@ class Based:
                 else:
                     printc('未保存seqnum，因为它为空值，可能是上一次登陆信息未保存或者闪断更新导致')
             else:
-                printc('查找不到此账号信息，', '请在法定时间内登陆一次', '以获得账号信息', conf = [(1, 36, 48), (1, 31, 48), (1, 36, 48)])        
+                printc('查找不到此账号信息，', '请在法定时间内登陆一次', '以获得账号信息', conf = [(1, 36, 48), (1, 31, 48), (1, 36, 48)])
         if c:
             with open(p + 'ark_data.json', 'w', encoding = 'utf-8') as f:
                 f.write(json.dumps(data, indent = 2, separators = (', ', ': '), ensure_ascii = False))
