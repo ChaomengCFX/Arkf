@@ -17,15 +17,17 @@ with open(his, 'w', encoding = 'utf-8') as f:
     f.close()
 try:
     with open(p + 'ark_data.json', 'r+', encoding = 'utf-8') as f:
-        data = json.dumps(json.loads(f.read()), indent = 2, separators = (', ', ': '), ensure_ascii = False)
-        if (data == None):
-            data = {}
-        f.write(data)
+        data = json.loads(f.read())
+        data_s = json.dumps(data, indent = 2, separators = (', ', ': '), ensure_ascii = False)
+        f.seek(0)
+        f.truncate()
+        f.write(data_s)
         f.close()
 except:
     data = {}
-printc('data文件内容:\r\n', str(data), conf = [(1, 36, 48), (1, 33, 48)])
-
+    data_s = '{}（空）'
+printc('data文件内容:\r\n', data_s, conf = [(1, 36, 48), (1, 33, 48)])
+del data_s
 class Urls:
     heartbeat = 'http://line.*?realtime.*?api.biligame.net/app/v2/time/heartbeat'
     login_1 = 'https://p.biligame.com/api/external/user.token.oauth.login/v3'
@@ -117,17 +119,24 @@ class Based:
                     c = True
                     printc('正常获得token')
                 elif json.loads(flow.request.text)['channelId'] == '1':
-                    data[str(re['channelUid'])] = {
-                      'login': {
-                     	  'access_key': json.loads(json.loads(flow.request.get_content())['extension'])['access_token'],
-                     	 },
-                     	 'uid': int(re['uid']),
-                     	 'seqnum': 1,
-                     	 'token': re['token'],
-                     	 'secret': None
-                     }
-                    c = True
-                    printc('检测到官服新账号成功登陆，已建立账号信息')
+                    cuid = str(re['channelUid'])
+                    if cuid in data:
+                        data[cuid]['login']['access_key'] = json.loads(json.loads(flow.request.get_content())['extension'])['access_token']
+                        data[cuid]['uid'] = int(re['uid'])
+                        data[cuid]['token'] = re['token']
+                        c = True
+                        printc('检测到官服账号成功登陆，已同步账号信息')
+                    else:
+                        data[str(re['channelUid'])] = {
+                          'login': {
+                     	      'access_key': json.loads(json.loads(flow.request.get_content())['extension'])['access_token'],
+                     	     },
+                     	     'uid': int(re['uid']),
+                     	     'seqnum': 1,
+                     	     'token': re['token'],
+                        }
+                        c = True
+                        printc('检测到官服新账号成功登陆，已建立账号信息')
                 else:
                     printc('正常获得token，但未获得账号信息，', '请在法定时间内重新登陆一次', '以获得账号信息', conf = [(1, 36, 48), (1, 31, 48), (1, 36, 48)])
         elif Urls.umatch(url, Urls.account_login):
@@ -142,7 +151,7 @@ class Based:
                     re = {
                       'result': 0,
                       'uid': str(data[key]['uid']),
-                      'secret': data[key]['secret'],
+                      'secret': data[key]['secret'] if 'secret' in data[key] else None,
                       'serviceLicenseVersion': 0
                      }
                     flow.response.set_text(json.dumps(re))
@@ -305,5 +314,5 @@ if __name__ == '__main__':
         m.addons.add(*addons)
         m.run()
     except:
-        printc('写入data文件内容:\r\n' + str(data), conf = [(1, 33, 48)])
+        printc('写入data文件内容:\r\n' + json.dumps(data, indent = 2, separators = (', ', ': '), ensure_ascii = False), conf = [(1, 33, 48)])
         m.shutdown()
