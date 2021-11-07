@@ -1,5 +1,5 @@
-VERSION = 'v2.2.1.3'
-PULISH_TIME = '2021-11-06 22-18-00'
+VERSION = 'v2.2.1.7'
+PULISH_TIME = '2021-11-07 11-43-00'
 import time, os
 stime = time.strftime('%Y-%m-%d %H-%M-%S')
 if os.name == 'nt':
@@ -23,18 +23,25 @@ with open(his, 'w', encoding = 'utf-8') as f:
     f.write(title + '\n\n')
     f.close()
 try:
-    with open(p + 'ark_data.json', 'r+', encoding = 'utf-8') as f:
-        data = json.loads(f.read())
-        data_s = json.dumps(data, indent = 2, separators = (', ', ': '), ensure_ascii = False)
-        f.seek(0)
-        f.truncate()
-        f.write(data_s)
-        f.close()
+    f = open(p + 'ark_data.json', 'r+', encoding = 'utf-8')
+    data = f.read()
+except Exception as e:
+    print(e)
+    f = open(p + 'ark_data.json', 'w', encoding = 'utf-8')
+    data = '{}'
+try:
+    data = json.loads(data)
+    data_s = json.dumps(data, indent = 2, separators = (', ', ': '), ensure_ascii = False)
+    f.seek(0)
+    f.truncate()
+    f.write(data_s)
+    f.close()
 except Exception as e:
     printc('加载ark_data.json时出错:\r\n', e, conf = [(1, 33, 48), (1, 31, 48)])
     data = {}
     data_s = '{}（加载出错，已将其作为空处理）'
 printc('data文件内容:\r\n', data_s, conf = [(1, 36, 48), (1, 33, 48)])
+del f
 del data_s
 
 def is_time():
@@ -128,6 +135,7 @@ class Based:
                   'Vary': 'origin'
                  },
                 )
+
     def response(self, flow: mp.HTTPFlow):
         global data
         url = flow.request.url
@@ -185,11 +193,11 @@ class Based:
                     else:
                         data[str(re['channelUid'])] = {
                           'login': {
-                     	      'access_key': json.loads(json.loads(flow.request.get_content())['extension'])['access_token'],
-                     	     },
-                     	     'uid': int(re['uid']),
-                     	     'seqnum': 1,
-                     	     'token': re['token'],
+                              'access_key': json.loads(json.loads(flow.request.get_content())['extension'])['access_token'],
+                             },
+                             'uid': int(re['uid']),
+                             'seqnum': '1',
+                             'token': re['token'],
                         }
                         c = True
                         printc('检测到官服新账号成功登陆，已建立账号信息')
@@ -210,7 +218,6 @@ class Based:
                     printc('法定时间段内登陆失败，原因未知')
             else:
                 printc('查找不到此账号信息，', '请在法定时间内登陆一次', '以获得账号信息', conf = [(1, 36, 48), (1, 31, 48), (1, 36, 48)])
-
         elif Urls.umatch(url, Urls.hyper):
             if not 'seqnum' in flow.response.headers:
                 return
@@ -221,6 +228,7 @@ class Based:
             if key:
                 if (flow.response.headers['seqnum'] != 'null'):
                     data[key]['seqnum'] = flow.response.headers['seqnum']
+                    c = True
                     printc('已保存seqnum: ' + str(flow.response.headers['seqnum']))
                 else:
                     printc('未保存seqnum，因为它为空值，可能是上一次登陆信息未保存或者闪断更新导致')
